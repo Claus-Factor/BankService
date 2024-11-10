@@ -4,7 +4,7 @@ package com.bank.model;
 import java.math.BigDecimal;
 
 public class Account {
-    private Long id;
+    private Long id; // 8-значное число
     private User user;
     private BigDecimal balance;
 
@@ -22,7 +22,7 @@ public class Account {
     public String toString() {
         return "Account{" +
                 "id=" + id +
-                ", user=" + user +
+                ", user=" + user.getName() + "(" + user.getEmail() + ")" +
                 ", balance=" + balance +
                 '}';
     }
