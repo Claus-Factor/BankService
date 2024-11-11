@@ -90,6 +90,25 @@ public class AuthService {
         return true;
     }
 
+    public boolean resetPassword(String email, String newPassword) {
+       try {
+           if (!Session.isActive()) {
+               throw new Exception("Нет активной сессии для сброса пароля");
+           }
+           if (Session.getCurrentUser() == null)
+               throw new Exception("Такого пользователя не существует");
+           if (!Session.getCurrentUser().equals(getUserByEmail(email)))
+               throw new Exception("Данная учетная запись вам не принадлежит");
+           Session.getCurrentUser().setPasswordHash(hashPassword(newPassword));
+           System.out.println("Пароль успешно изменен.");
+           return true;
+       }
+       catch (Exception e) {
+           System.out.println(e.getMessage());
+           return false;
+       }
+    }
+
     public User getUserByEmail(String email) {
         return users.get(email);
     }
