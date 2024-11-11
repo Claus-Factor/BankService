@@ -14,44 +14,54 @@ import java.util.Map;
 public class AccountService {
     private List<Transaction> transactionsHistory = new ArrayList<>();
     private Map<Long, Account> accounts = new HashMap<>();
-    private Long accountCounter = 1L;
+    private Long accountCounter = 0L;
 
     private Account getAccountById(Long id) {
         return accounts.get(id);
     }
 
+    public Map<Long, Account> getAccounts() {
+        return accounts;
+    }
+
     public HashMap<Integer, Account> currentUserAccounts() {
         HashMap<Integer, Account> currentUserAccounts = new HashMap<>();
-        for (int key = 1; key <= accountCounter; key++) {
-            if (accounts.get(key + 10L*7).getUser().equals(Session.getCurrentUser())) {
-                currentUserAccounts.put(key, accounts.get(key * 10L*7));
+        int currentUserCounter = 1;
+        for (Long key = 1L; key <= accountCounter; key++) {
+            if (accounts.get(key).getUser().equals(Session.getCurrentUser())) {
+                currentUserAccounts.put(currentUserCounter, accounts.get(key));
+                currentUserCounter++;
             }
         }
         return currentUserAccounts;
     }
 
+
     public boolean createAccount() {
         try {
             if (!Session.isActive())
                 throw new Exception("Нет активной сессии для открытия счета");
-            Long id = 10L*7 + accountCounter;
-            Account newAcccount = new Account(id, Session.getCurrentUser(), BigDecimal.valueOf(0));
-            accounts.put(id, newAcccount);
+            Long id = ++accountCounter;
+            Account newAccount = new Account(id, Session.getCurrentUser(), BigDecimal.valueOf(0));
+            accounts.put(id, newAccount);
             System.out.println("Клиент " + Session.getCurrentUser().getName() + "(" + Session.getCurrentUser().getEmail() + ")" +
-                    "создал новый счёт");
-            accountCounter++;
+                    "открыл новый счёт: №" + accountCounter);
 
         }
         catch (Exception e) {
             System.out.println(e.getMessage());
+            return false;
         }
-        return false;
+        return true;
     }
 
-    public void deposit(Account account, BigDecimal amount) {
+    public void deposit(Long accountId, BigDecimal amount) {
         try {
             if (!Session.isActive())
                 throw new Exception("Нет активной сессии для осуществления транзакции");
+            Account account = accounts.get(accountId);
+            if (account == null)
+                throw new Exception("Не найден банковский счет с указанным номером");
             if (!Session.getCurrentUser().equals(account.getUser()))
                 throw new Exception("Выбранный счет принадлежит другому клиенту банка");
             account.setBalance(account.getBalance().add(amount));
@@ -72,10 +82,13 @@ public class AccountService {
 
     }
 
-    public void withdraw(Account account, BigDecimal amount) {
+    public void withdraw(Long accountId, BigDecimal amount) {
         try {
             if (!Session.isActive())
                 throw new Exception("Нет активной сессии для осуществления транзакции");
+            Account account = accounts.get(accountId);
+            if (account == null)
+                throw new Exception("Не найден банковский счет с указанным номером");
             if (!Session.getCurrentUser().equals(account.getUser()))
                 throw new Exception("Выбранный счет принадлежит другому клиенту банка");
             if (account.getBalance().compareTo(amount) < 0)
@@ -97,17 +110,25 @@ public class AccountService {
         }
     }
 
-    public void transfer(Account fromAccount, Long toAccountId, BigDecimal amount) {
+    public void transfer(Long fromAccountId, Long toAccountId, BigDecimal amount) {
         try {
             if (!Session.isActive())
                 throw new Exception("Нет активной сессии для осуществления транзакции");
+            Account fromAccount = accounts.get(fromAccountId);
+            if (fromAccount == null)
+                throw new Exception("Не найден банковский счет с таким номером");
             if (!Session.getCurrentUser().equals(fromAccount.getUser()))
                 throw new Exception("Выбранный счет принадлежит другому клиенту банка");
+            Account toAccount = getAccountById(toAccountId);
+            if (toAccount == fromAccount) {
+                throw new Exception("Нельзя перевести на текущий счет");
+            }
+            if (toAccount == null)
+                throw new Exception("Не найден получатель с таким номером");
             if (fromAccount.getBalance().compareTo(amount) < 0)
                 throw new Exception("Недостаточно средств");
             fromAccount.setBalance(fromAccount.getBalance().subtract(amount));
 
-            Account toAccount = getAccountById(toAccountId);
             toAccount.setBalance(toAccount.getBalance().add(amount));
             Transaction transaction = new Transaction(
                     transactionsHistory.size()+ 1L,

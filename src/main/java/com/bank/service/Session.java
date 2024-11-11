@@ -5,14 +5,12 @@ import com.bank.model.User;
 
 public class Session {
     private static User currentUser = null;
-    private static User lastUser = null;
 
-    private static int unsuccessfulAttempts = 0;
+    private static int unsuccessfulAttempts = 0; // Количество попыток неудачного входа во время текущей сессиии
 
     public static void login(User user) {
         unsuccessfulAttempts = 0;
         currentUser = user;
-        lastUser = user;
         System.out.println("Добро пожаловать, " + currentUser.getName() + "!");
     }
 
@@ -38,10 +36,6 @@ public class Session {
 
     public static User getCurrentUser() {
         return currentUser;
-    }
-
-    public static User getLastUser() {
-        return lastUser;
     }
 
     public static boolean isActive() {

@@ -7,8 +7,7 @@ import com.bank.service.AuthService;
 import com.bank.service.Session;
 
 import java.math.BigDecimal;
-import java.util.HashMap;
-import java.util.Scanner;
+import java.util.*;
 
 public class Main {
     public static void main(String[] args) {
@@ -18,17 +17,17 @@ public class Main {
 
 //        Account currentAccount = null; // Счет текущщего пользователя (потом реализуем возможность нескольких счетов для одного клиента банка)
 
-
         Scanner scanner = new Scanner(System.in);
 
         // Регистрация некоторых клиентов для примера
-        authService.register("Nick", "nick@example.com", "1234567890", "password1");
-        authService.register("Jane", "jane@example.com", "1234567890", "password2");
-        authService.register("Sam", "sam@example.com", "1234567890", "password3");
-        authService.register("Peter", "peter@example.com", "1234567890", "password4");
-        authService.register("Alice", "alice@example.com", "1234567890", "password");
+        authService.register("Nick", "nick@mail.com", "1234567890", "password1");
+        authService.register("Jane", "jane@mail.com", "1234567890", "password2");
+        authService.register("Sam", "sam@mail.com", "1234567890", "password3");
+        authService.register("Peter", "peter@mail.com", "1234567890", "password4");
+        authService.register("Alice", "alice@mail.com", "1234567890", "password5");
 
-        while (true) {
+        boolean isConinued = true;
+        while (isConinued) {
             System.out.println("""
                     
                      ************************
@@ -43,10 +42,9 @@ public class Main {
                     8. Выход из сервиса
                      ************************
                     """);
+
             int choice = scanner.nextInt();
-            if (choice == 8) {
-                break;
-            }
+
             switch (choice) {
                 case 1 -> {
                     System.out.println("Введите: имя, эл.почта, телефон, пароль");
@@ -60,54 +58,62 @@ public class Main {
                 }
                 case 3 -> {
                     accountService.createAccount();
+                    for (Account a : accountService.currentUserAccounts().values()) {
+                        System.out.println(a);
+                    }
+
                 }
                 case 4 -> {
-                    System.out.println("Введите: сумма депозита, порядковый номер вашего счета");
+                    System.out.println("Введите: сумма депозита, уникальный номер вашего счета");
                     String amount = scanner.next();
-                    Integer number = scanner.nextInt();
-                    HashMap<Integer, Account> currentUserAccounts = accountService.currentUserAccounts();
+                    Long number = scanner.nextLong();
+                    accountService.deposit(number, new BigDecimal(amount));
 
-                    accountService.deposit(currentUserAccounts.get(number), new BigDecimal(amount));
+//                    /* Вариант с относительными номерами счетов клиента */
+//                    System.out.println("Введите: сумма депозита, порядковый номер вашего счета");
+//                    String amount = scanner.next();
+//                    Integer number = scanner.nextInt();
+//                    Long myAccountId = accountService.currentUserAccounts().get(number).getId();
+//                    accountService.deposit(myAccountId, new BigDecimal(amount));
                 }
                 case 5 -> {
-                    System.out.println("Введите: сумма снятия, порядковый номер вашего счета");
-
+                    System.out.println("Введите: сумма снятия, уникальный номер вашего счета");
                     String amount = scanner.next();
-                    Integer number = scanner.nextInt();
-                    HashMap<Integer, Account> currentUserAccounts = accountService.currentUserAccounts();
-
-                    accountService.withdraw(currentUserAccounts.get(number), new BigDecimal(amount));
+                    Long number = scanner.nextLong();
+                    accountService.withdraw(number, new BigDecimal(amount));
                 }
                 case 6 -> {
-                    System.out.println("Введите: сумма перевода, порядковый номер вашего счета, номер счета получателя");
+                    System.out.println("Введите: сумма перевода, номер вашего счета, номер счета получателя");
                     String amount = scanner.next();
-                    Integer myNumber = scanner.nextInt();
+                    Long myNumber = scanner.nextLong();
                     Long number = scanner.nextLong();
-                    Account myAccount = accountService.currentUserAccounts().get(myNumber);
-
-                    accountService.transfer(myAccount, number, new BigDecimal(amount));
+                    accountService.transfer(myNumber, number, new BigDecimal(amount));
                 }
                 case 7 -> {
                     Session.logout();
                 }
+                case 8 -> {
+                    isConinued = false;
+                }
                 default -> System.out.println("Повторите попытку");
             }
+
         }
 
-        User alice = authService.login("alice@example.com", "password6");
-        alice = authService.login("alice@example.com", "password7");
-        alice = authService.login("alice@example.com", "password7");
-        alice = authService.login("alice@example.com", "password7");
-        for (int i = 0; i < 10; i++) {
-            String email = scanner.next();
-            String password = scanner.next();
-
-            alice = authService.login(email, password);
-        }
-
-        Account aliceAccount = new Account(1L, alice, BigDecimal.valueOf(1000));
-        accountService.deposit(aliceAccount, BigDecimal.valueOf(200));
-        accountService.withdraw(aliceAccount, BigDecimal.valueOf(100));
+//        User alice = authService.login("alice@example.com", "password6");
+//        alice = authService.login("alice@example.com", "password7");
+//        alice = authService.login("alice@example.com", "password7");
+//        alice = authService.login("alice@example.com", "password7");
+//        for (int i = 0; i < 10; i++) {
+//            String email = scanner.next();
+//            String password = scanner.next();
+//
+//            alice = authService.login(email, password);
+//        }
+//
+//        Account aliceAccount = new Account(1L, alice, BigDecimal.valueOf(1000));
+//        accountService.deposit(aliceAccount, BigDecimal.valueOf(200));
+//        accountService.withdraw(aliceAccount, BigDecimal.valueOf(100));
 
     }
 

@@ -10,10 +10,11 @@ import java.util.Map;
 
 public class Blocker {
     private static final ChronoUnit unit = ChronoUnit.SECONDS;
+    private static final long duration = 2000;
     public static Map<String, LocalDateTime> blockedUsers = new HashMap<>();
 
     public static void block(User user) {
-        blockedUsers.put(user.getEmail(), LocalDateTime.now().plus(20, unit)); // блокировка на последующие 5 часов
+        blockedUsers.put(user.getEmail(), LocalDateTime.now().plus(duration, unit)); // блокировка на последующие 2000 секунд
     }
     public static void restore(User user) {
         blockedUsers.remove(user.getEmail());
