@@ -13,18 +13,16 @@ public class Main {
     public static void main(String[] args) {
         AuthService authService = new AuthService(); // загружаем сервис регистрации клиента Банка
         AccountService accountService = new AccountService(); // загружаем сервис обслуживания
-        User currentUser = null; // Пользователь текущей сессии
-
-//        Account currentAccount = null; // Счет текущщего пользователя (потом реализуем возможность нескольких счетов для одного клиента банка)
+        User currentUser = null;
 
         Scanner scanner = new Scanner(System.in);
 
-        // Регистрация некоторых клиентов для примера
-        authService.register("Nick", "nick@mail.com", "1234567890", "password1");
-        authService.register("Jane", "jane@mail.com", "1234567890", "password2");
-        authService.register("Sam", "sam@mail.com", "1234567890", "password3");
-        authService.register("Peter", "peter@mail.com", "1234567890", "password4");
-        authService.register("Alice", "alice@mail.com", "1234567890", "password5");
+//         Регистрация некоторых клиентов для примера
+//        authService.register("Nick", "nick@mail.com", "1234567890", "password1");
+//        authService.register("Jane", "jane@mail.com", "1234567890", "password2");
+//        authService.register("Sam", "sam@mail.com", "1234567890", "password3");
+//        authService.register("Peter", "peter@mail.com", "1234567890", "password4");
+//        authService.register("Alice", "alice@mail.com", "1234567890", "password5");
 
         boolean isConinued = true;
         while (isConinued) {
@@ -99,21 +97,6 @@ public class Main {
             }
 
         }
-
-//        User alice = authService.login("alice@example.com", "password6");
-//        alice = authService.login("alice@example.com", "password7");
-//        alice = authService.login("alice@example.com", "password7");
-//        alice = authService.login("alice@example.com", "password7");
-//        for (int i = 0; i < 10; i++) {
-//            String email = scanner.next();
-//            String password = scanner.next();
-//
-//            alice = authService.login(email, password);
-//        }
-//
-//        Account aliceAccount = new Account(1L, alice, BigDecimal.valueOf(1000));
-//        accountService.deposit(aliceAccount, BigDecimal.valueOf(200));
-//        accountService.withdraw(aliceAccount, BigDecimal.valueOf(100));
 
     }
 

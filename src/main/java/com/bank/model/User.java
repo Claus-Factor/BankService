@@ -1,7 +1,9 @@
 // User.java
 package com.bank.model;
 
-public class User {
+import java.io.Serializable;
+
+public class User implements Serializable {
     private Long id; // в базе данных это был бы первичный ключ;
     private String name;
     private String email;

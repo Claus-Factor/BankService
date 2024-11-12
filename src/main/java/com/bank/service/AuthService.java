@@ -4,6 +4,7 @@ package com.bank.service;
 import com.bank.model.Account;
 import com.bank.model.User;
 
+import java.io.*;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.HashMap;
@@ -13,8 +14,13 @@ import org.mindrot.jbcrypt.BCrypt;
 
 public class AuthService {
     private Map<String, User> users = new HashMap<>();
-
     private Long userCounter = 1L;
+
+    public AuthService() {
+        loadUsers();
+        // Пока пустой конструктор.
+        // В дальнейшем здесь реализуется логика загрузки зарегистрированный учетных записей пользователей
+    }
 
     private String hashPassword(String password) {
         return BCrypt.hashpw(password, BCrypt.gensalt(10));
@@ -32,6 +38,7 @@ public class AuthService {
             User newUser = new User(userCounter, name, email, telephone, passwordHash);
             users.put(email, newUser);
             userCounter++;
+            saveUsers();
             System.out.printf("Пользователь %s(%s) успешно зарегистрирован%n", name, email);
             return true;
         }
@@ -111,6 +118,25 @@ public class AuthService {
 
     public User getUserByEmail(String email) {
         return users.get(email);
+    }
+
+    private void saveUsers() {
+        try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream("users.dat"))) {
+            oos.writeObject(users);
+            System.out.println("Пользователи успешно сохранены в файл");
+        }
+        catch (IOException e) {
+            System.out.println(e.getMessage());
+        }
+    }
+    private void loadUsers() {
+        try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream("users.dat"))) {
+            users = (Map<String,User>)ois.readObject();
+            System.out.println("Пользователи успешно загружены из файла");
+        }
+        catch (IOException | ClassNotFoundException e) {
+            System.out.println(e.getMessage());
+        }
     }
 
 }
